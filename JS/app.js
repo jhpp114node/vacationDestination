@@ -1,3 +1,4 @@
+import { API_KEYS } from "../config";
 // Global URL image
 const DEFAULT_PHOTO_URL =
   "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dHJhdmVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
@@ -34,7 +35,8 @@ const retrieveUserInput = () => {
   const destination = document.querySelector("#destination_name").value;
   console.log(destination);
   const location = document.querySelector("#location_name").value;
-  const photoURL = imageHandler(document.querySelector("#photo_url").value);
+  const photoUserInput = `${destination}, ${location}`;
+  const photoURL = imageHandler(photoUserInput);
   const description = descriptionHandler(
     document.querySelector("#description").value
   );
@@ -129,7 +131,7 @@ const editItem = (event) => {
   const parentDiv = event.target.parentElement.parentElement;
   let userInputDestination = prompt("Enter a new destination");
   let userInputLocation = prompt("Enter a new location");
-  let userInputImgUrlBeforeCheck = prompt("Enter an image url");
+  // let userInputImgUrlBeforeCheck = prompt("Enter an image url");
   let userInputDescription = prompt("Enter a description");
   console.log(userInputDestination);
   if (
@@ -148,18 +150,18 @@ const editItem = (event) => {
   ) {
     parentDiv.childNodes[1].textContent = userInputLocation;
   }
-  if (
-    userInputImgUrlBeforeCheck !== null &&
-    userInputImgUrlBeforeCheck !== undefined &&
-    userInputImgUrlBeforeCheck.length > 0
-  ) {
-    userInputImgUrlBeforeCheck = imageHandler(userInputImgUrlBeforeCheck);
-    console.log(parentDiv.parentElement.childNodes[0]);
-    parentDiv.parentElement.childNodes[0].setAttribute(
-      "src",
-      userInputImgUrlBeforeCheck
-    );
-  }
+  // if (
+  //   userInputImgUrlBeforeCheck !== null &&
+  //   userInputImgUrlBeforeCheck !== undefined &&
+  //   userInputImgUrlBeforeCheck.length > 0
+  // ) {
+  //   userInputImgUrlBeforeCheck = imageHandler(userInputImgUrlBeforeCheck);
+  //   console.log(parentDiv.parentElement.childNodes[0]);
+  //   parentDiv.parentElement.childNodes[0].setAttribute(
+  //     "src",
+  //     userInputImgUrlBeforeCheck
+  //   );
+  // }
   if (
     userInputDescription !== null &&
     userInputDescription !== undefined &&
@@ -181,6 +183,6 @@ const resetForm = (event) => {
   // console.log(event.target.destination_name);
   event.target.destination_name.value = "";
   event.target.location_name.value = "";
-  event.target.photo_url.value = "";
+  // event.target.photo_url.value = "";
   event.target.description.value = "";
 };
