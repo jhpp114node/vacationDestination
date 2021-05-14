@@ -3,6 +3,7 @@ const DEFAULT_PHOTO_URL =
   "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dHJhdmVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
 
 const DEFAULT_DESCRIPTION = " ";
+const API_END_POINT = `https://api.unsplash.com/`;
 
 // Global DOM
 const formSubmitForm = document.querySelector("#destination_form");
