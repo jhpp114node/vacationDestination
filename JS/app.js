@@ -1,18 +1,23 @@
-import { API_KEYS } from "../config";
+import API_KEYS from "../config.js";
+
 // Global URL image
 const DEFAULT_PHOTO_URL =
   "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dHJhdmVsfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
 
 const DEFAULT_DESCRIPTION = " ";
-const API_END_POINT = `https://api.unsplash.com/`;
+const API_END_POINT = "https://api.unsplash.com/";
 
 // Global DOM
 const formSubmitForm = document.querySelector("#destination_form");
 formSubmitForm.addEventListener("submit", handleSubmit);
 
-function handleSubmit(event) {
+async function handleSubmit(event) {
   event.preventDefault();
-  createBootstrapCard(retrieveUserInput());
+  const { destination, location, photoURL, description } = retrieveUserInput();
+  console.log(photoURL);
+  console.log(await fetchImage(photoURL));
+  let photoData = await fetchImage(photoURL);
+  createBootstrapCard(destination, location, photoData, description);
   resetForm(event);
 }
 
@@ -35,12 +40,11 @@ const retrieveUserInput = () => {
   const destination = document.querySelector("#destination_name").value;
   console.log(destination);
   const location = document.querySelector("#location_name").value;
-  const photoUserInput = `${destination}, ${location}`;
+  const photoUserInput = `${destination.trim()},${location.trim()}`;
   const photoURL = imageHandler(photoUserInput);
   const description = descriptionHandler(
     document.querySelector("#description").value
   );
-  console.log(destination, location, photoURL, description);
   return { destination, location, photoURL, description };
 };
 
@@ -48,9 +52,43 @@ const retrieveUserInput = () => {
 // Helper Function =============================
 const imageHandler = (photo) => {
   if (photo === undefined || photo.length === 0 || photo === null) {
+    console.log("wtf??");
     return (photo = DEFAULT_PHOTO_URL);
   }
   return photo;
+};
+
+// fetch data from api
+function fetchImage(photoURL) {
+  const requestImage = fetch(
+    `${API_END_POINT}search/photos/?query=${photoURL}&client_id=${API_KEYS.unsplash}`
+  ).then((response) => {
+    if (response.status === 200) {
+      // do something
+      return response.json();
+    } else {
+      fetchError(response);
+    }
+  });
+  return requestImage
+    .then((data) => {
+      return data.results;
+    })
+    .then((result) => {
+      if (result.length == 0) {
+        fetchError();
+      }
+      console.log(result);
+      return result[Math.floor(Math.random() * result.length)].urls.regular;
+    })
+    .catch((error) => {
+      console.log(error);
+      return DEFAULT_PHOTO_URL;
+    });
+}
+
+const fetchError = (res) => {
+  return Promise.reject("Error on API fetch" + res.status);
 };
 
 const descriptionHandler = (description) => {
@@ -67,12 +105,7 @@ const descriptionHandler = (description) => {
 };
 
 // create cards
-const createBootstrapCard = ({
-  destination,
-  location,
-  photoURL,
-  description,
-}) => {
+const createBootstrapCard = (destination, location, photoURL, description) => {
   // Container DOM
   // USE innerHTML NEXT TIME fk this
   const rowContainer = document.querySelector(".added_data_row_container");
@@ -127,11 +160,12 @@ const createBootstrapCard = ({
 };
 
 // Edit button
-const editItem = (event) => {
+async function editItem(event) {
   const parentDiv = event.target.parentElement.parentElement;
   let userInputDestination = prompt("Enter a new destination");
   let userInputLocation = prompt("Enter a new location");
-  // let userInputImgUrlBeforeCheck = prompt("Enter an image url");
+  let userInputImage = `${userInputDestination}, ${userInputLocation}`;
+  let userImageData = await fetchImage(userInputImage);
   let userInputDescription = prompt("Enter a description");
   console.log(userInputDestination);
   if (
@@ -150,18 +184,15 @@ const editItem = (event) => {
   ) {
     parentDiv.childNodes[1].textContent = userInputLocation;
   }
-  // if (
-  //   userInputImgUrlBeforeCheck !== null &&
-  //   userInputImgUrlBeforeCheck !== undefined &&
-  //   userInputImgUrlBeforeCheck.length > 0
-  // ) {
-  //   userInputImgUrlBeforeCheck = imageHandler(userInputImgUrlBeforeCheck);
-  //   console.log(parentDiv.parentElement.childNodes[0]);
-  //   parentDiv.parentElement.childNodes[0].setAttribute(
-  //     "src",
-  //     userInputImgUrlBeforeCheck
-  //   );
-  // }
+
+  if (
+    userImageData !== null &&
+    userImageData !== undefined &&
+    userImageData.length > 0
+  ) {
+    parentDiv.parentElement.childNodes[0].setAttribute("src", userImageData);
+  }
+
   if (
     userInputDescription !== null &&
     userInputDescription !== undefined &&
@@ -171,7 +202,7 @@ const editItem = (event) => {
     console.log(parentDiv.childNodes[2]);
     parentDiv.childNodes[2].textContent = userInputDescription;
   }
-};
+}
 
 // Delete button
 const deleteItem = (event) => {
