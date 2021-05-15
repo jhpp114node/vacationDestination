@@ -164,8 +164,20 @@ async function editItem(event) {
   const parentDiv = event.target.parentElement.parentElement;
   let userInputDestination = prompt("Enter a new destination");
   let userInputLocation = prompt("Enter a new location");
-  let userInputImage = `${userInputDestination}, ${userInputLocation}`;
-  let userImageData = await fetchImage(userInputImage);
+  let userInputImage = "";
+  let userImageData = "";
+  if (
+    userInputDestination !== null &&
+    userInputDestination !== undefined &&
+    userInputDestination.length > 0 &&
+    userInputLocation !== null &&
+    userInputLocation !== undefined &&
+    userInputLocation.length > 0
+  ) {
+    userInputImage = `${userInputDestination}, ${userInputLocation}`;
+    userImageData = await fetchImage(userInputImage);
+  }
+
   let userInputDescription = prompt("Enter a description");
   console.log(userInputDestination);
   if (
