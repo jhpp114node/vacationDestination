@@ -1,4 +1,4 @@
-import API_KEYS from "../config.js";
+import API_KEYS from "./config.js";
 
 // Global URL image
 const DEFAULT_PHOTO_URL =
